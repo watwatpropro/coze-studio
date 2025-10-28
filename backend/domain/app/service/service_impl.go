@@ -22,16 +22,19 @@ import (
 
 	"gorm.io/gorm"
 
-	connectorModel "github.com/coze-dev/coze-studio/backend/api/model/crossdomain/connector"
-	databaseModel "github.com/coze-dev/coze-studio/backend/api/model/crossdomain/database"
-	knowledgeModel "github.com/coze-dev/coze-studio/backend/api/model/crossdomain/knowledge"
-	crossconnector "github.com/coze-dev/coze-studio/backend/crossdomain/contract/connector"
-	crossdatabase "github.com/coze-dev/coze-studio/backend/crossdomain/contract/database"
-	crossknowledge "github.com/coze-dev/coze-studio/backend/crossdomain/contract/knowledge"
-	crossplugin "github.com/coze-dev/coze-studio/backend/crossdomain/contract/plugin"
+	connectorModel "github.com/coze-dev/coze-studio/backend/crossdomain/connector/model"
+	databaseModel "github.com/coze-dev/coze-studio/backend/crossdomain/database/model"
+	knowledgeModel "github.com/coze-dev/coze-studio/backend/crossdomain/knowledge/model"
+
+	crossconnector "github.com/coze-dev/coze-studio/backend/crossdomain/connector"
+	crossdatabase "github.com/coze-dev/coze-studio/backend/crossdomain/database"
+	crossknowledge "github.com/coze-dev/coze-studio/backend/crossdomain/knowledge"
+	crossplugin "github.com/coze-dev/coze-studio/backend/crossdomain/plugin"
+	crossworkflow "github.com/coze-dev/coze-studio/backend/crossdomain/workflow"
+
 	"github.com/coze-dev/coze-studio/backend/domain/app/entity"
 	"github.com/coze-dev/coze-studio/backend/domain/app/repository"
-	"github.com/coze-dev/coze-studio/backend/infra/contract/idgen"
+	"github.com/coze-dev/coze-studio/backend/infra/idgen"
 	"github.com/coze-dev/coze-studio/backend/pkg/errorx"
 	"github.com/coze-dev/coze-studio/backend/types/errno"
 )
@@ -65,6 +68,11 @@ func (a *appServiceImpl) CreateDraftAPP(ctx context.Context, req *CreateDraftAPP
 	appID, err = a.APPRepo.CreateDraftAPP(ctx, app)
 	if err != nil {
 		return 0, errorx.Wrapf(err, "CreateDraftAPP failed, spaceID=%d", req.SpaceID)
+	}
+
+	err = crossworkflow.DefaultSVC().InitApplicationDefaultConversationTemplate(ctx, req.SpaceID, appID, req.OwnerID)
+	if err != nil {
+		return 0, err
 	}
 
 	return appID, nil

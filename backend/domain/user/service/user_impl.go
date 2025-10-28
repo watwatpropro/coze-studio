@@ -36,8 +36,8 @@ import (
 	userEntity "github.com/coze-dev/coze-studio/backend/domain/user/entity"
 	"github.com/coze-dev/coze-studio/backend/domain/user/internal/dal/model"
 	"github.com/coze-dev/coze-studio/backend/domain/user/repository"
-	"github.com/coze-dev/coze-studio/backend/infra/contract/idgen"
-	"github.com/coze-dev/coze-studio/backend/infra/contract/storage"
+	"github.com/coze-dev/coze-studio/backend/infra/idgen"
+	"github.com/coze-dev/coze-studio/backend/infra/storage"
 	"github.com/coze-dev/coze-studio/backend/pkg/errorx"
 	"github.com/coze-dev/coze-studio/backend/pkg/lang/conv"
 	"github.com/coze-dev/coze-studio/backend/pkg/lang/ptr"
@@ -395,6 +395,7 @@ func (u *userImpl) ValidateSession(ctx context.Context, sessionKey string) (
 	return &userEntity.Session{
 		UserID:    userModel.ID,
 		Locale:    userModel.Locale,
+		UserEmail: userModel.Email,
 		CreatedAt: sessionModel.CreatedAt,
 		ExpiresAt: sessionModel.ExpiresAt,
 	}, true, nil

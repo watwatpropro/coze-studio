@@ -27,29 +27,30 @@ import (
 	"testing"
 	"time"
 
+	"github.com/coze-dev/coze-studio/backend/bizpkg/llm/modelbuilder"
+	"github.com/coze-dev/coze-studio/backend/domain/workflow/config"
+
 	"github.com/bytedance/mockey"
 	"github.com/cloudwego/eino/schema"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
-	crossmodel "github.com/coze-dev/coze-studio/backend/api/model/crossdomain/database"
-	"github.com/coze-dev/coze-studio/backend/api/model/crossdomain/knowledge"
-	workflowModel "github.com/coze-dev/coze-studio/backend/api/model/crossdomain/workflow"
-	crossdatabase "github.com/coze-dev/coze-studio/backend/crossdomain/contract/database"
-	"github.com/coze-dev/coze-studio/backend/crossdomain/contract/database/databasemock"
-	crossknowledge "github.com/coze-dev/coze-studio/backend/crossdomain/contract/knowledge"
-	"github.com/coze-dev/coze-studio/backend/crossdomain/contract/knowledge/knowledgemock"
-	crossmodelmgr "github.com/coze-dev/coze-studio/backend/crossdomain/contract/modelmgr"
-	mockmodel "github.com/coze-dev/coze-studio/backend/crossdomain/contract/modelmgr/modelmock"
-	crossplugin "github.com/coze-dev/coze-studio/backend/crossdomain/contract/plugin"
-	"github.com/coze-dev/coze-studio/backend/crossdomain/contract/plugin/pluginmock"
-	"github.com/coze-dev/coze-studio/backend/crossdomain/impl/code"
+	crossdatabase "github.com/coze-dev/coze-studio/backend/crossdomain/database"
+	"github.com/coze-dev/coze-studio/backend/crossdomain/database/databasemock"
+	crossmodel "github.com/coze-dev/coze-studio/backend/crossdomain/database/model"
+	crossknowledge "github.com/coze-dev/coze-studio/backend/crossdomain/knowledge"
+	"github.com/coze-dev/coze-studio/backend/crossdomain/knowledge/knowledgemock"
+	knowledge "github.com/coze-dev/coze-studio/backend/crossdomain/knowledge/model"
+	crossplugin "github.com/coze-dev/coze-studio/backend/crossdomain/plugin"
+	"github.com/coze-dev/coze-studio/backend/crossdomain/plugin/pluginmock"
+	workflowModel "github.com/coze-dev/coze-studio/backend/crossdomain/workflow/model"
 	userentity "github.com/coze-dev/coze-studio/backend/domain/user/entity"
 	"github.com/coze-dev/coze-studio/backend/domain/workflow"
 	"github.com/coze-dev/coze-studio/backend/domain/workflow/entity/vo"
 	"github.com/coze-dev/coze-studio/backend/domain/workflow/internal/compose"
 	"github.com/coze-dev/coze-studio/backend/domain/workflow/internal/execute"
-	"github.com/coze-dev/coze-studio/backend/infra/contract/coderunner"
+	"github.com/coze-dev/coze-studio/backend/domain/workflow/internal/nodes/plugin"
+	"github.com/coze-dev/coze-studio/backend/infra/coderunner"
 	mockWorkflow "github.com/coze-dev/coze-studio/backend/internal/mock/domain/workflow"
 	mockcode "github.com/coze-dev/coze-studio/backend/internal/mock/domain/workflow/crossdomain/code"
 	"github.com/coze-dev/coze-studio/backend/internal/testutil"
@@ -85,9 +86,6 @@ func TestIntentDetectorAndDatabase(t *testing.T) {
 			},
 		}).Build()
 
-		mockModelManager := mockmodel.NewMockManager(ctrl)
-		mockey.Mock(crossmodelmgr.DefaultSVC).Return(mockModelManager).Build()
-
 		chatModel := &testutil.UTChatModel{
 			InvokeResultProvider: func(_ int, in []*schema.Message) (*schema.Message, error) {
 				return &schema.Message{
@@ -103,7 +101,8 @@ func TestIntentDetectorAndDatabase(t *testing.T) {
 				}, nil
 			},
 		}
-		mockModelManager.EXPECT().GetModel(gomock.Any(), gomock.Any()).Return(chatModel, nil, nil).AnyTimes()
+
+		mockey.Mock(modelbuilder.BuildModelByID).Return(chatModel, nil, nil).Build()
 
 		mockDatabaseOperator := databasemock.NewMockDatabase(ctrl)
 		n := int64(2)
@@ -729,6 +728,20 @@ func TestKnowledgeDeleter(t *testing.T) {
 			UserID: 123,
 		})
 
+		defer mockey.Mock(execute.GetExeCtx).Return(&execute.Context{
+			RootCtx: execute.RootCtx{
+				ExeCfg: workflowModel.ExecuteConfig{
+					InputFileFields: map[string]*workflowModel.FileInfo{
+						"https://p26-bot-workflow-sign.byteimg.com/tos-cn-i-mdko3gqilj/5264fa1295da4a6483cd236b1316c454.pdf~tplv-mdko3gqilj-image.image?rk3s=81d4c505&x-expires=1782379180&x-signature=mlaXPIk9VJjOXu87xGaRmNRg9%2BA%3D": &workflowModel.FileInfo{
+							FileName:      "1706.03762v7.pdf",
+							FileURL:       "https://p26-bot-workflow-sign.byteimg.com/tos-cn-i-mdko3gqilj/5264fa1295da4a6483cd236b1316c454.pdf~tplv-mdko3gqilj-image.image?rk3s=81d4c505&x-expires=1782379180&x-signature=mlaXPIk9VJjOXu87xGaRmNRg9%2BA%3D",
+							FileExtension: ".pdf",
+						},
+					},
+				},
+			},
+		}).Build().UnPatch()
+
 		workflowSC, err := CanvasToWorkflowSchema(ctx, c)
 		assert.NoError(t, err)
 
@@ -751,7 +764,16 @@ func TestCodeAndPluginNodes(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		defer ctrl.Finish()
 		mockCodeRunner := mockcode.NewMockRunner(ctrl)
-		mockey.Mock(code.GetCodeRunner).Return(mockCodeRunner).Build()
+		mockey.Mock(coderunner.GetCodeRunner).Return(mockCodeRunner).Build()
+
+		mockRepo := mockWorkflow.NewMockRepository(ctrl)
+
+		mockRepo.EXPECT().GetNodeOfCodeConfig().Return(&config.NodeOfCodeConfig{
+			SupportThirdPartModules: []string{"httpx", "numpy"},
+		}).AnyTimes()
+
+		mockey.Mock(workflow.GetRepository).Return(mockRepo).Build()
+
 		mockCodeRunner.EXPECT().Run(gomock.Any(), gomock.Any()).Return(&coderunner.RunResponse{
 			Result: map[string]any{
 				"key0":  "value0",
@@ -762,8 +784,7 @@ func TestCodeAndPluginNodes(t *testing.T) {
 
 		mockToolService := pluginmock.NewMockPluginService(ctrl)
 		mockey.Mock(crossplugin.DefaultSVC).Return(mockToolService).Build()
-		mockToolService.EXPECT().ExecutePlugin(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(),
-			gomock.Any()).Return(map[string]any{
+		mockey.Mock(plugin.ExecutePlugin).Return(map[string]any{
 			"log_id": "20240617191637796DF3F4453E16AF3615",
 			"msg":    "success",
 			"code":   0,
@@ -771,7 +792,7 @@ func TestCodeAndPluginNodes(t *testing.T) {
 				"image_url": "image_url",
 				"prompt":    "小狗在草地上",
 			},
-		}, nil).AnyTimes()
+		}, nil).Build()
 
 		ctx := t.Context()
 		ctx = ctxcache.Init(ctx)

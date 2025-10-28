@@ -17,18 +17,25 @@
 package entity
 
 import (
-	"github.com/coze-dev/coze-studio/backend/api/model/crossdomain/knowledge"
+	model "github.com/coze-dev/coze-studio/backend/crossdomain/knowledge/model"
 )
 
-type Slice = knowledge.Slice
+type Slice = model.Slice
 
 type WhereSliceOpt struct {
 	KnowledgeID int64
 	DocumentID  int64
 	DocumentIDs []int64
 	Keyword     *string
-	Sequence    int64
 	PageSize    int64
 	Offset      int64
 	NotEmpty    *bool
+}
+
+type WherePhotoSliceOpt struct {
+	KnowledgeID int64
+	DocumentIDs []int64
+	Limit       *int
+	Offset      *int
+	HasCaption  *bool
 }

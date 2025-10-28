@@ -22,8 +22,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/coze-dev/coze-studio/backend/api/model/crossdomain/database"
-	crossdatabase "github.com/coze-dev/coze-studio/backend/crossdomain/contract/database"
+	crossdatabase "github.com/coze-dev/coze-studio/backend/crossdomain/database"
+	database "github.com/coze-dev/coze-studio/backend/crossdomain/database/model"
 	"github.com/coze-dev/coze-studio/backend/domain/workflow/entity"
 	"github.com/coze-dev/coze-studio/backend/domain/workflow/entity/vo"
 	"github.com/coze-dev/coze-studio/backend/domain/workflow/internal/canvas/convert"
@@ -139,7 +139,8 @@ func (u *Update) Invoke(ctx context.Context, in map[string]any) (map[string]any,
 	return ret, nil
 }
 
-func (u *Update) ToCallbackInput(_ context.Context, in map[string]any) (map[string]any, error) {
+func (u *Update) ToCallbackInput(_ context.Context, in map[string]any) (
+	*nodes.StructuredCallbackInput, error) {
 	inventory, err := convertClauseGroupToUpdateInventory(context.Background(), u.clauseGroup, in)
 	if err != nil {
 		return nil, err
@@ -147,7 +148,8 @@ func (u *Update) ToCallbackInput(_ context.Context, in map[string]any) (map[stri
 	return u.toDatabaseUpdateCallbackInput(inventory)
 }
 
-func (u *Update) toDatabaseUpdateCallbackInput(inventory *updateInventory) (map[string]any, error) {
+func (u *Update) toDatabaseUpdateCallbackInput(inventory *updateInventory) (
+	*nodes.StructuredCallbackInput, error) {
 	databaseID := u.databaseInfoID
 	result := make(map[string]any)
 	result["databaseInfoList"] = []string{fmt.Sprintf("%d", databaseID)}
@@ -175,5 +177,7 @@ func (u *Update) toDatabaseUpdateCallbackInput(inventory *updateInventory) (map[
 		"fieldInfo": fieldInfo,
 	}
 
-	return result, nil
+	return &nodes.StructuredCallbackInput{
+		Input: result,
+	}, nil
 }

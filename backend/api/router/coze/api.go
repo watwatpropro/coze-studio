@@ -20,6 +20,28 @@ func Register(r *server.Hertz) {
 	{
 		_api := root.Group("/api", _apiMw()...)
 		{
+			_admin := _api.Group("/admin", _adminMw()...)
+			{
+				_config := _admin.Group("/config", _configMw()...)
+				{
+					_basic := _config.Group("/basic", _basicMw()...)
+					_basic.GET("/get", append(_getbasicconfigurationMw(), coze.GetBasicConfiguration)...)
+					_basic.POST("/save", append(_savebasicconfigurationMw(), coze.SaveBasicConfiguration)...)
+				}
+				{
+					_knowledge := _config.Group("/knowledge", _knowledgeMw()...)
+					_knowledge.GET("/get", append(_getknowledgeconfigMw(), coze.GetKnowledgeConfig)...)
+					_knowledge.POST("/save", append(_updateknowledgeconfigMw(), coze.UpdateKnowledgeConfig)...)
+				}
+				{
+					_model := _config.Group("/model", _modelMw()...)
+					_model.POST("/create", append(_createmodelMw(), coze.CreateModel)...)
+					_model.POST("/delete", append(_deletemodelMw(), coze.DeleteModel)...)
+					_model.GET("/list", append(_getmodellistMw(), coze.GetModelList)...)
+				}
+			}
+		}
+		{
 			_bot := _api.Group("/bot", _botMw()...)
 			_bot.POST("/get_type_list", append(_gettypelistMw(), coze.GetTypeList)...)
 			_bot.POST("/upload_file", append(_uploadfileMw(), coze.UploadFile)...)
@@ -91,14 +113,14 @@ func Register(r *server.Hertz) {
 			}
 		}
 		{
-			_knowledge := _api.Group("/knowledge", _knowledgeMw()...)
-			_knowledge.POST("/create", append(_createdatasetMw(), coze.CreateDataset)...)
-			_knowledge.POST("/delete", append(_deletedatasetMw(), coze.DeleteDataset)...)
-			_knowledge.POST("/detail", append(_datasetdetailMw(), coze.DatasetDetail)...)
-			_knowledge.POST("/list", append(_listdatasetMw(), coze.ListDataset)...)
-			_knowledge.POST("/update", append(_updatedatasetMw(), coze.UpdateDataset)...)
+			_knowledge0 := _api.Group("/knowledge", _knowledge0Mw()...)
+			_knowledge0.POST("/create", append(_createdatasetMw(), coze.CreateDataset)...)
+			_knowledge0.POST("/delete", append(_deletedatasetMw(), coze.DeleteDataset)...)
+			_knowledge0.POST("/detail", append(_datasetdetailMw(), coze.DatasetDetail)...)
+			_knowledge0.POST("/list", append(_listdatasetMw(), coze.ListDataset)...)
+			_knowledge0.POST("/update", append(_updatedatasetMw(), coze.UpdateDataset)...)
 			{
-				_document := _knowledge.Group("/document", _documentMw()...)
+				_document := _knowledge0.Group("/document", _documentMw()...)
 				_document.POST("/create", append(_createdocumentMw(), coze.CreateDocument)...)
 				_document.POST("/delete", append(_deletedocumentMw(), coze.DeleteDocument)...)
 				_document.POST("/list", append(_listdocumentMw(), coze.ListDocument)...)
@@ -110,31 +132,31 @@ func Register(r *server.Hertz) {
 				}
 			}
 			{
-				_icon := _knowledge.Group("/icon", _iconMw()...)
+				_icon := _knowledge0.Group("/icon", _iconMw()...)
 				_icon.POST("/get", append(_geticonfordatasetMw(), coze.GetIconForDataset)...)
 			}
 			{
-				_photo := _knowledge.Group("/photo", _photoMw()...)
+				_photo := _knowledge0.Group("/photo", _photoMw()...)
 				_photo.POST("/caption", append(_updatephotocaptionMw(), coze.UpdatePhotoCaption)...)
 				_photo.POST("/detail", append(_photodetailMw(), coze.PhotoDetail)...)
 				_photo.POST("/extract_caption", append(_extractphotocaptionMw(), coze.ExtractPhotoCaption)...)
 				_photo.POST("/list", append(_listphotoMw(), coze.ListPhoto)...)
 			}
 			{
-				_review := _knowledge.Group("/review", _reviewMw()...)
+				_review := _knowledge0.Group("/review", _reviewMw()...)
 				_review.POST("/create", append(_createdocumentreviewMw(), coze.CreateDocumentReview)...)
 				_review.POST("/mget", append(_mgetdocumentreviewMw(), coze.MGetDocumentReview)...)
 				_review.POST("/save", append(_savedocumentreviewMw(), coze.SaveDocumentReview)...)
 			}
 			{
-				_slice := _knowledge.Group("/slice", _sliceMw()...)
+				_slice := _knowledge0.Group("/slice", _sliceMw()...)
 				_slice.POST("/create", append(_createsliceMw(), coze.CreateSlice)...)
 				_slice.POST("/delete", append(_deletesliceMw(), coze.DeleteSlice)...)
 				_slice.POST("/list", append(_listsliceMw(), coze.ListSlice)...)
 				_slice.POST("/update", append(_updatesliceMw(), coze.UpdateSlice)...)
 			}
 			{
-				_table_schema := _knowledge.Group("/table_schema", _table_schemaMw()...)
+				_table_schema := _knowledge0.Group("/table_schema", _table_schemaMw()...)
 				_table_schema.POST("/get", append(_gettableschemaMw(), coze.GetTableSchema)...)
 				_table_schema.POST("/validate", append(_validatetableschemaMw(), coze.ValidateTableSchema)...)
 			}
@@ -143,12 +165,21 @@ func Register(r *server.Hertz) {
 			_marketplace := _api.Group("/marketplace", _marketplaceMw()...)
 			{
 				_product := _marketplace.Group("/product", _productMw()...)
+				_product.GET("/call_info", append(_publicgetproductcallinfoMw(), coze.PublicGetProductCallInfo)...)
+				_product.GET("/config", append(_publicgetmarketpluginconfigMw(), coze.PublicGetMarketPluginConfig)...)
 				_product.GET("/detail", append(_publicgetproductdetailMw(), coze.PublicGetProductDetail)...)
 				_product.POST("/duplicate", append(_publicduplicateproductMw(), coze.PublicDuplicateProduct)...)
 				_product.POST("/favorite", append(_publicfavoriteproductMw(), coze.PublicFavoriteProduct)...)
 				_favorite := _product.Group("/favorite", _favoriteMw()...)
 				_favorite.GET("/list.v2", append(_publicgetuserfavoritelistv2Mw(), coze.PublicGetUserFavoriteListV2)...)
 				_product.GET("/list", append(_publicgetproductlistMw(), coze.PublicGetProductList)...)
+				_product.GET("/search", append(_publicsearchproductMw(), coze.PublicSearchProduct)...)
+				_search0 := _product.Group("/search", _search0Mw()...)
+				_search0.GET("/suggest", append(_publicsearchsuggestMw(), coze.PublicSearchSuggest)...)
+				{
+					_category := _product.Group("/category", _categoryMw()...)
+					_category.GET("/list", append(_publicgetproductcategorylistMw(), coze.PublicGetProductCategoryList)...)
+				}
 			}
 		}
 		{
@@ -250,6 +281,10 @@ func Register(r *server.Hertz) {
 		}
 		{
 			_permission_api := _api.Group("/permission_api", _permission_apiMw()...)
+			{
+				_coze_web_app := _permission_api.Group("/coze_web_app", _coze_web_appMw()...)
+				_coze_web_app.POST("/impersonate_coze_user", append(_impersonatecozeuserMw(), coze.ImpersonateCozeUser)...)
+			}
 			{
 				_pat := _permission_api.Group("/pat", _patMw()...)
 				_pat.POST("/create_personal_access_token_and_permission", append(_createpersonalaccesstokenandpermissionMw(), coze.CreatePersonalAccessTokenAndPermission)...)
@@ -409,9 +444,20 @@ func Register(r *server.Hertz) {
 	{
 		_v1 := root.Group("/v1", _v1Mw()...)
 		_v1.GET("/conversations", append(_listconversationsapiMw(), coze.ListConversationsApi)...)
+		_conversations := _v1.Group("/conversations", _conversationsMw()...)
+		_conversations.DELETE("/:conversation_id", append(_deleteconversationapiMw(), coze.DeleteConversationApi)...)
+		_conversations.PUT("/:conversation_id", append(_updateconversationapiMw(), coze.UpdateConversationApi)...)
+		{
+			_apps := _v1.Group("/apps", _appsMw()...)
+			_apps.GET("/:app_id", append(_getonlineappdataMw(), coze.GetOnlineAppData)...)
+		}
 		{
 			_bot0 := _v1.Group("/bot", _bot0Mw()...)
 			_bot0.GET("/get_online_info", append(_getbotonlineinfoMw(), coze.GetBotOnlineInfo)...)
+		}
+		{
+			_bots := _v1.Group("/bots", _botsMw()...)
+			_bots.GET("/:bot_id", append(_opengetbotinfoMw(), coze.OpenGetBotInfo)...)
 		}
 		{
 			_conversation0 := _v1.Group("/conversation", _conversation0Mw()...)
@@ -422,9 +468,9 @@ func Register(r *server.Hertz) {
 			}
 		}
 		{
-			_conversations := _v1.Group("/conversations", _conversationsMw()...)
+			_conversations0 := _v1.Group("/conversations", _conversations0Mw()...)
 			{
-				_conversation_id := _conversations.Group("/:conversation_id", _conversation_idMw()...)
+				_conversation_id := _conversations0.Group("/:conversation_id", _conversation_idMw()...)
 				_conversation_id.POST("/clear", append(_clearconversationapiMw(), coze.ClearConversationApi)...)
 			}
 		}
@@ -438,6 +484,10 @@ func Register(r *server.Hertz) {
 			_workflow.POST("/run", append(_openapirunflowMw(), coze.OpenAPIRunFlow)...)
 			_workflow.POST("/stream_resume", append(_openapistreamresumeflowMw(), coze.OpenAPIStreamResumeFlow)...)
 			_workflow.POST("/stream_run", append(_openapistreamrunflowMw(), coze.OpenAPIStreamRunFlow)...)
+			{
+				_conversation1 := _workflow.Group("/conversation", _conversation1Mw()...)
+				_conversation1.POST("/create", append(_openapicreateconversationMw(), coze.OpenAPICreateConversation)...)
+			}
 		}
 		{
 			_workflows := _v1.Group("/workflows", _workflowsMw()...)
@@ -448,5 +498,7 @@ func Register(r *server.Hertz) {
 	{
 		_v3 := root.Group("/v3", _v3Mw()...)
 		_v3.POST("/chat", append(_chatv3Mw(), coze.ChatV3)...)
+		_chat := _v3.Group("/chat", _chatMw()...)
+		_chat.POST("/cancel", append(_cancelchatapiMw(), coze.CancelChatApi)...)
 	}
 }

@@ -23,10 +23,10 @@ import (
 	"strconv"
 
 	"github.com/coze-dev/coze-studio/backend/api/model/base"
-	model "github.com/coze-dev/coze-studio/backend/api/model/crossdomain/variables"
 	"github.com/coze-dev/coze-studio/backend/api/model/data/variable/kvmemory"
 	"github.com/coze-dev/coze-studio/backend/api/model/data/variable/project_memory"
 	"github.com/coze-dev/coze-studio/backend/application/base/ctxutil"
+	model "github.com/coze-dev/coze-studio/backend/crossdomain/variables/model"
 	"github.com/coze-dev/coze-studio/backend/domain/memory/variables/entity"
 	variables "github.com/coze-dev/coze-studio/backend/domain/memory/variables/service"
 	"github.com/coze-dev/coze-studio/backend/pkg/errorx"
@@ -291,12 +291,13 @@ func (v *VariableApplicationService) DeleteVariableInstance(ctx context.Context,
 
 	bizType := ternary.IFElse(req.BotID == 0, project_memory.VariableConnector_Project, project_memory.VariableConnector_Bot)
 	bizID := ternary.IFElse(req.BotID == 0, req.ProjectID, fmt.Sprintf("%d", req.BotID))
+	connectId := ternary.IFElse(req.ConnectorID == nil, consts.CozeConnectorID, req.GetConnectorID())
 
 	e := entity.NewUserVariableMeta(&model.UserVariableMeta{
 		BizType:      bizType,
 		BizID:        bizID,
 		Version:      "",
-		ConnectorID:  req.GetConnectorID(),
+		ConnectorID:  connectId,
 		ConnectorUID: fmt.Sprintf("%d", *uid),
 	})
 

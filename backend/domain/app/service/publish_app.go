@@ -20,10 +20,10 @@ import (
 	"context"
 	"time"
 
-	"github.com/coze-dev/coze-studio/backend/api/model/crossdomain/plugin"
 	resourceCommon "github.com/coze-dev/coze-studio/backend/api/model/resource/common"
-	crossplugin "github.com/coze-dev/coze-studio/backend/crossdomain/contract/plugin"
-	crossworkflow "github.com/coze-dev/coze-studio/backend/crossdomain/contract/workflow"
+	crossplugin "github.com/coze-dev/coze-studio/backend/crossdomain/plugin"
+	plugin "github.com/coze-dev/coze-studio/backend/crossdomain/plugin/model"
+	crossworkflow "github.com/coze-dev/coze-studio/backend/crossdomain/workflow"
 	"github.com/coze-dev/coze-studio/backend/domain/app/entity"
 	"github.com/coze-dev/coze-studio/backend/domain/app/repository"
 	"github.com/coze-dev/coze-studio/backend/pkg/errorx"
@@ -75,7 +75,7 @@ func (a *appServiceImpl) publishByConnectors(ctx context.Context, recordID int64
 	for cid := range req.ConnectorPublishConfigs {
 		connectorIDs = append(connectorIDs, cid)
 	}
-	failedResources, err := a.packResources(ctx, req.APPID, req.Version, connectorIDs)
+	failedResources, err := a.packResources(ctx, req.APPID, req.Version, connectorIDs, req.ConnectorPublishConfigs)
 	if err != nil {
 		return false, err
 	}
@@ -92,7 +92,7 @@ func (a *appServiceImpl) publishByConnectors(ctx context.Context, recordID int64
 
 	for cid := range req.ConnectorPublishConfigs {
 		switch cid {
-		case commonConsts.APIConnectorID:
+		case commonConsts.APIConnectorID, commonConsts.WebSDKConnectorID:
 			updateSuccessErr := a.APPRepo.UpdateConnectorPublishStatus(ctx, recordID, entity.ConnectorPublishStatusOfSuccess)
 			if updateSuccessErr == nil {
 				continue
@@ -172,7 +172,8 @@ func (a *appServiceImpl) createPublishVersion(ctx context.Context, req *PublishA
 	return recordID, nil
 }
 
-func (a *appServiceImpl) packResources(ctx context.Context, appID int64, version string, connectorIDs []int64) (failedResources []*entity.PackResourceFailedInfo, err error) {
+func (a *appServiceImpl) packResources(ctx context.Context, appID int64, version string, connectorIDs []int64, pConfig map[int64]entity.PublishConfig) (failedResources []*entity.PackResourceFailedInfo, err error) {
+
 	failedPlugins, allDraftPlugins, err := a.packPlugins(ctx, appID, version)
 	if err != nil {
 		return nil, err

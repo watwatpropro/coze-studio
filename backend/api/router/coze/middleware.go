@@ -20,6 +20,7 @@ package coze
 
 import (
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/coze-dev/coze-studio/backend/api/middleware"
 )
 
 func rootMw() []app.HandlerFunc {
@@ -944,16 +945,6 @@ func _userupdateavatarMw() []app.HandlerFunc {
 	return nil
 }
 
-func _apiapiMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
-func _apiwebMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
 func _getconnectornameMw() []app.HandlerFunc {
 	// your code...
 	return nil
@@ -1173,11 +1164,6 @@ func _submitdatabaseinserttaskMw() []app.HandlerFunc {
 	return nil
 }
 
-func _validatetableschema0Mw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
 func _validatedatabasetableschemaMw() []app.HandlerFunc {
 	// your code...
 	return nil
@@ -1312,11 +1298,6 @@ func _checkprojectversionnumberMw() []app.HandlerFunc {
 	return nil
 }
 
-func _publishconnectorlist0Mw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
 func _getprojectpublishedconnectorMw() []app.HandlerFunc {
 	// your code...
 	return nil
@@ -1353,11 +1334,6 @@ func _getpublishrecorddetailMw() []app.HandlerFunc {
 }
 
 func _favoriteMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
-func _publicgetuserfavoritelistMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
@@ -1412,11 +1388,6 @@ func _gethistoryschemaMw() []app.HandlerFunc {
 }
 
 func _filesMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
-func _retrievefileopenMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
@@ -1502,6 +1473,164 @@ func _commonMw() []app.HandlerFunc {
 }
 
 func _upload1Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _conversation1Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _openapicreateconversationMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _coze_web_appMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _impersonatecozeuserMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _botsMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _opengetbotinfoMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deleteconversationapiMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updateconversationapiMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _conversations0Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _chatMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _cancelchatapiMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _appsMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getonlineappdataMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _search0Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+func _adminMw() []app.HandlerFunc {
+	return []app.HandlerFunc{middleware.AdminAuthMW()}
+}
+
+func _configMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _publicsearchproductMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+func _basicMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _publicsearchsuggestMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+func _getbasicconfigurationMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _publicgetproductcallinfoMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _categoryMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+func _getknowledgeconfigMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _publicgetproductcategorylistMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+func _updateknowledgeconfigMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _publicgetmarketpluginconfigMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+func _modelMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _createmodelMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deletemodelMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getmodellistMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updatemodelMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _knowledge0Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _savebasicconfigurationMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }

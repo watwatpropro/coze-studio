@@ -27,14 +27,16 @@ import (
 	"github.com/cloudwego/eino/components/model"
 	"github.com/cloudwego/eino/schema"
 
-	"github.com/coze-dev/coze-studio/backend/infra/contract/modelmgr"
+	"github.com/coze-dev/coze-studio/backend/api/model/admin/config"
+	"github.com/coze-dev/coze-studio/backend/api/model/app/developer_api"
+	"github.com/coze-dev/coze-studio/backend/bizpkg/config/modelmgr"
 	"github.com/coze-dev/coze-studio/backend/pkg/logs"
 )
 
 type UTChatModel struct {
 	InvokeResultProvider func(index int, in []*schema.Message) (*schema.Message, error)
 	StreamResultProvider func(index int, in []*schema.Message) (*schema.StreamReader[*schema.Message], error)
-	Modals               []modelmgr.Modal
+	Modals               *developer_api.ModelAbility
 	Index                int
 	ModelType            string
 	mu                   sync.Mutex
@@ -72,7 +74,14 @@ func (q *UTChatModel) Generate(ctx context.Context, in []*schema.Message, _ ...m
 	}
 
 	if msg.ResponseMeta != nil {
-		callbackOut.TokenUsage = (*model.TokenUsage)(msg.ResponseMeta.Usage)
+		callbackOut.TokenUsage = &model.TokenUsage{
+			PromptTokens: msg.ResponseMeta.Usage.PromptTokens,
+			PromptTokenDetails: model.PromptTokenDetails{
+				CachedTokens: msg.ResponseMeta.Usage.PromptTokenDetails.CachedTokens,
+			},
+			CompletionTokens: msg.ResponseMeta.Usage.CompletionTokens,
+			TotalTokens:      msg.ResponseMeta.Usage.TotalTokens,
+		}
 	}
 
 	_ = callbacks.OnEnd(ctx, callbackOut)
@@ -112,7 +121,14 @@ func (q *UTChatModel) Stream(ctx context.Context, in []*schema.Message, _ ...mod
 		}
 
 		if t.ResponseMeta != nil {
-			callbackOut.TokenUsage = (*model.TokenUsage)(t.ResponseMeta.Usage)
+			callbackOut.TokenUsage = &model.TokenUsage{
+				PromptTokens: t.ResponseMeta.Usage.PromptTokens,
+				PromptTokenDetails: model.PromptTokenDetails{
+					CachedTokens: t.ResponseMeta.Usage.PromptTokenDetails.CachedTokens,
+				},
+				CompletionTokens: t.ResponseMeta.Usage.CompletionTokens,
+				TotalTokens:      t.ResponseMeta.Usage.TotalTokens,
+			}
 		}
 
 		return callbackOut, nil
@@ -136,20 +152,9 @@ func (q *UTChatModel) Reset() {
 }
 
 func (q *UTChatModel) Info(_ context.Context) *modelmgr.Model {
-	if len(q.Modals) == 0 {
-		return &modelmgr.Model{
-			Meta: modelmgr.ModelMeta{
-				Capability: &modelmgr.Capability{
-					InputModal: []modelmgr.Modal{modelmgr.ModalText},
-				},
-			},
-		}
-	}
 	return &modelmgr.Model{
-		Meta: modelmgr.ModelMeta{
-			Capability: &modelmgr.Capability{
-				InputModal: q.Modals,
-			},
+		Model: &config.Model{
+			Capability: q.Modals,
 		},
 	}
 }

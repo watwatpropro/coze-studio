@@ -106,6 +106,12 @@ table "agent_tool_draft" {
     type    = json
     comment = "Tool Openapi Operation Schema"
   }
+  column "source" {
+    null    = false
+    type    = tinyint
+    default = 0
+    comment = "tool source 1 coze saas 0 default"
+  }
   primary_key {
     columns = [column.id]
   }
@@ -197,6 +203,12 @@ table "agent_tool_version" {
     unsigned = true
     comment  = "Create Time in Milliseconds"
   }
+  column "source" {
+    null    = false
+    type    = tinyint
+    default = 0
+    comment = "tool source 1 coze saas 0 default"
+  }
   primary_key {
     columns = [column.id]
   }
@@ -275,6 +287,12 @@ table "api_key" {
     default = 0
     comment = "Used Time in Milliseconds"
   }
+  column "ak_type" {
+    null    = false
+    type    = tinyint
+    default = 0
+    comment = "api key type "
+  }
   primary_key {
     columns = [column.id]
   }
@@ -333,6 +351,124 @@ table "app_connector_release_ref" {
   index "uniq_record_connector" {
     unique  = true
     columns = [column.record_id, column.connector_id]
+  }
+}
+table "app_conversation_template_draft" {
+  schema  = schema.opencoze
+  comment = "app_conversation_template_draft"
+  column "id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "id"
+  }
+  column "app_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "app id"
+  }
+  column "space_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "space id"
+  }
+  column "name" {
+    null    = false
+    type    = varchar(256)
+    comment = "conversation name"
+  }
+  column "template_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "template id"
+  }
+  column "creator_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "creator id"
+  }
+  column "created_at" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "create time in millisecond"
+  }
+  column "updated_at" {
+    null     = true
+    type     = bigint
+    unsigned = true
+    comment  = "update time in millisecond"
+  }
+  column "deleted_at" {
+    null    = true
+    type    = datetime(3)
+    comment = "delete time in millisecond"
+  }
+  primary_key {
+    columns = [column.id]
+  }
+  index "idx_space_id_app_id_template_id" {
+    columns = [column.space_id, column.app_id, column.template_id]
+  }
+}
+table "app_conversation_template_online" {
+  schema  = schema.opencoze
+  comment = "app_conversation_template_online"
+  column "id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "id"
+  }
+  column "app_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "app id"
+  }
+  column "space_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "space id"
+  }
+  column "name" {
+    null    = false
+    type    = varchar(256)
+    comment = "conversation name"
+  }
+  column "template_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "template id"
+  }
+  column "version" {
+    null    = false
+    type    = varchar(256)
+    comment = "version name"
+  }
+  column "creator_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "creator id"
+  }
+  column "created_at" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "create time in millisecond"
+  }
+  primary_key {
+    columns = [column.id]
+  }
+  index "idx_space_id_app_id_template_id_version" {
+    columns = [column.space_id, column.app_id, column.template_id, column.version]
   }
 }
 table "app_draft" {
@@ -397,6 +533,124 @@ table "app_draft" {
   }
   primary_key {
     columns = [column.id]
+  }
+}
+table "app_dynamic_conversation_draft" {
+  schema  = schema.opencoze
+  comment = "app_dynamic_conversation_draft"
+  column "id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "id"
+  }
+  column "app_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "app id"
+  }
+  column "name" {
+    null    = false
+    type    = varchar(256)
+    comment = "conversation name"
+  }
+  column "user_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "user id"
+  }
+  column "connector_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "connector id"
+  }
+  column "conversation_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "conversation id"
+  }
+  column "created_at" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "create time in millisecond"
+  }
+  column "deleted_at" {
+    null    = true
+    type    = datetime(3)
+    comment = "delete time in millisecond"
+  }
+  primary_key {
+    columns = [column.id]
+  }
+  index "idx_app_id_connector_id_user_id" {
+    columns = [column.app_id, column.connector_id, column.user_id]
+  }
+  index "idx_connector_id_user_id_name" {
+    columns = [column.connector_id, column.user_id, column.name]
+  }
+}
+table "app_dynamic_conversation_online" {
+  schema  = schema.opencoze
+  comment = "app_dynamic_conversation_online"
+  column "id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "id"
+  }
+  column "app_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "app id"
+  }
+  column "name" {
+    null    = false
+    type    = varchar(256)
+    comment = "conversation name"
+  }
+  column "user_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "user id"
+  }
+  column "connector_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "connector id"
+  }
+  column "conversation_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "conversation id"
+  }
+  column "created_at" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "create time in millisecond"
+  }
+  column "deleted_at" {
+    null    = true
+    type    = datetime(3)
+    comment = "delete time in millisecond"
+  }
+  primary_key {
+    columns = [column.id]
+  }
+  index "idx_app_id_connector_id_user_id" {
+    columns = [column.app_id, column.connector_id, column.user_id]
+  }
+  index "idx_connector_id_user_id_name" {
+    columns = [column.connector_id, column.user_id, column.name]
   }
 }
 table "app_release_record" {
@@ -506,6 +760,202 @@ table "app_release_record" {
     columns = [column.app_id, column.version]
   }
 }
+table "app_static_conversation_draft" {
+  schema  = schema.opencoze
+  comment = "app_static_conversation_draft"
+  column "id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "id"
+  }
+  column "template_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "template id"
+  }
+  column "user_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "user id"
+  }
+  column "connector_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "connector id"
+  }
+  column "conversation_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "conversation id"
+  }
+  column "created_at" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "create time in millisecond"
+  }
+  column "deleted_at" {
+    null    = true
+    type    = datetime(3)
+    comment = "delete time in millisecond"
+  }
+  primary_key {
+    columns = [column.id]
+  }
+  index "idx_connector_id_user_id_template_id" {
+    columns = [column.connector_id, column.user_id, column.template_id]
+  }
+}
+table "app_static_conversation_online" {
+  schema  = schema.opencoze
+  comment = "app_static_conversation_online"
+  column "id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "id"
+  }
+  column "template_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "template id"
+  }
+  column "user_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "user id"
+  }
+  column "connector_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "connector id"
+  }
+  column "conversation_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "conversation id"
+  }
+  column "created_at" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "create time in millisecond"
+  }
+  primary_key {
+    columns = [column.id]
+  }
+  index "idx_connector_id_user_id_template_id" {
+    columns = [column.connector_id, column.user_id, column.template_id]
+  }
+}
+table "chat_flow_role_config" {
+  schema  = schema.opencoze
+  comment = "chat_flow_role_config"
+  column "id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "id"
+  }
+  column "workflow_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "workflow id"
+  }
+  column "connector_id" {
+    null     = true
+    type     = bigint
+    unsigned = true
+    comment  = "connector id"
+  }
+  column "name" {
+    null    = false
+    type    = varchar(256)
+    comment = "role name"
+  }
+  column "description" {
+    null    = true
+    type    = mediumtext
+    comment = "role description"
+  }
+  column "version" {
+    null    = true
+    type    = varchar(256)
+    comment = "version"
+  }
+  column "avatar" {
+    null    = false
+    type    = varchar(256)
+    comment = "avatar uri"
+  }
+  column "background_image_info" {
+    null    = true
+    type    = mediumtext
+    comment = "background image information, object structure"
+  }
+  column "onboarding_info" {
+    null    = true
+    type    = mediumtext
+    comment = "intro information, object structure"
+  }
+  column "suggest_reply_info" {
+    null    = true
+    type    = mediumtext
+    comment = "user suggestions, object structure"
+  }
+  column "audio_config" {
+    null    = true
+    type    = mediumtext
+    comment = "agent audio config, object structure"
+  }
+  column "user_input_config" {
+    null    = false
+    type    = varchar(256)
+    comment = "user input config, object structure"
+  }
+  column "creator_id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "creator id"
+  }
+  column "created_at" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "create time in millisecond"
+  }
+  column "updated_at" {
+    null     = true
+    type     = bigint
+    unsigned = true
+    comment  = "update time in millisecond"
+  }
+  column "deleted_at" {
+    null    = true
+    type    = datetime(3)
+    comment = "delete time in millisecond"
+  }
+  primary_key {
+    columns = [column.id]
+  }
+  index "idx_connector_id_version" {
+    columns = [column.connector_id, column.version]
+  }
+  index "idx_workflow_id_version" {
+    columns = [column.workflow_id, column.version]
+  }
+}
 table "connector_workflow_version" {
   schema  = schema.opencoze
   comment = "connector workflow version"
@@ -565,6 +1015,12 @@ table "conversation" {
     unsigned       = true
     comment        = "id"
     auto_increment = true
+  }
+  column "name" {
+    null    = true
+    type    = varchar(255)
+    default = ""
+    comment = "conversation name"
   }
   column "connector_id" {
     null     = false
@@ -848,6 +1304,100 @@ table "draft_database_info" {
   }
   index "idx_space_app_creator_deleted" {
     columns = [column.space_id, column.app_id, column.creator_id, column.deleted_at]
+  }
+}
+table "files" {
+  schema  = schema.opencoze
+  comment = "file resource table"
+  collate = "utf8mb4_general_ci"
+  column "id" {
+    null     = false
+    type     = bigint
+    unsigned = true
+    comment  = "id"
+  }
+  column "name" {
+    null    = false
+    type    = varchar(255)
+    default = ""
+    comment = "file name"
+  }
+  column "file_size" {
+    null     = false
+    type     = bigint
+    default  = 0
+    unsigned = true
+    comment  = "file size"
+  }
+  column "tos_uri" {
+    null    = false
+    type    = varchar(1024)
+    default = ""
+    comment = "TOS URI"
+  }
+  column "status" {
+    null     = false
+    type     = tinyint
+    default  = 0
+    unsigned = true
+    comment  = "status，0invalid，1valid"
+  }
+  column "comment" {
+    null    = false
+    type    = varchar(1024)
+    default = ""
+    comment = "file comment"
+  }
+  column "source" {
+    null     = false
+    type     = tinyint
+    default  = 0
+    unsigned = true
+    comment  = "source：1 from API,"
+  }
+  column "creator_id" {
+    null    = false
+    type    = varchar(512)
+    default = ""
+    comment = "creator id"
+  }
+  column "content_type" {
+    null    = false
+    type    = varchar(255)
+    default = ""
+    comment = "content type"
+  }
+  column "coze_account_id" {
+    null     = false
+    type     = bigint
+    default  = 0
+    unsigned = true
+    comment  = "coze account id"
+  }
+  column "created_at" {
+    null     = false
+    type     = bigint
+    default  = 0
+    unsigned = true
+    comment  = "Create Time in Milliseconds"
+  }
+  column "updated_at" {
+    null     = false
+    type     = bigint
+    default  = 0
+    unsigned = true
+    comment  = "Update Time in Milliseconds"
+  }
+  column "deleted_at" {
+    null    = true
+    type    = datetime(3)
+    comment = "Delete Time"
+  }
+  primary_key {
+    columns = [column.id]
+  }
+  index "idx_creator_id" {
+    columns = [column.creator_id]
   }
 }
 table "knowledge" {
@@ -1262,6 +1812,40 @@ table "knowledge_document_slice" {
     columns = [column.sequence]
   }
 }
+table "kv_entries" {
+  schema  = schema.opencoze
+  comment = "kv data"
+  collate = "utf8mb4_general_ci"
+  column "id" {
+    null           = false
+    type           = bigint
+    unsigned       = true
+    comment        = "id"
+    auto_increment = true
+  }
+  column "namespace" {
+    null    = false
+    type    = varchar(255)
+    comment = "namespace"
+  }
+  column "key_data" {
+    null    = false
+    type    = varchar(255)
+    comment = "key_data"
+  }
+  column "value_data" {
+    null    = true
+    type    = longblob
+    comment = "value_data"
+  }
+  primary_key {
+    columns = [column.id]
+  }
+  index "uniq_namespace_key" {
+    unique  = true
+    columns = [column.namespace, column.key_data]
+  }
+}
 table "message" {
   schema  = schema.opencoze
   comment = "message record"
@@ -1464,6 +2048,74 @@ table "model_entity" {
     columns = [column.status]
   }
 }
+table "model_instance" {
+  schema  = schema.opencoze
+  comment = "Model Instance Management Table"
+  column "id" {
+    null           = false
+    type           = bigint
+    unsigned       = true
+    comment        = "id"
+    auto_increment = true
+  }
+  column "type" {
+    null    = false
+    type    = tinyint
+    comment = "Model Type 0-LLM 1-TextEmbedding 2-Rerank "
+  }
+  column "provider" {
+    null    = false
+    type    = json
+    comment = "Provider Information"
+  }
+  column "display_info" {
+    null    = false
+    type    = json
+    comment = "Display Information"
+  }
+  column "connection" {
+    null    = false
+    type    = json
+    comment = "Connection Information"
+  }
+  column "capability" {
+    null    = false
+    type    = json
+    comment = "Model Capability"
+  }
+  column "parameters" {
+    null    = false
+    type    = json
+    comment = "Model Parameters"
+  }
+  column "extra" {
+    null    = true
+    type    = json
+    comment = "Extra Information"
+  }
+  column "created_at" {
+    null     = false
+    type     = bigint
+    default  = 0
+    unsigned = true
+    comment  = "Create Time in Milliseconds"
+  }
+  column "updated_at" {
+    null     = false
+    type     = bigint
+    default  = 0
+    unsigned = true
+    comment  = "Update Time in Milliseconds"
+  }
+  column "deleted_at" {
+    null    = true
+    type    = datetime(3)
+    comment = "Delete Time"
+  }
+  primary_key {
+    columns = [column.id]
+  }
+}
 table "model_meta" {
   schema  = schema.opencoze
   comment = "Model metadata"
@@ -1547,7 +2199,6 @@ table "model_meta" {
 table "node_execution" {
   schema  = schema.opencoze
   comment = "Node run record, used to record the status information of each node during each workflow execution"
-  collate = "utf8mb4_0900_ai_ci"
   column "id" {
     null     = false
     type     = bigint
@@ -1564,19 +2215,16 @@ table "node_execution" {
     null    = false
     type    = varchar(128)
     comment = "node key"
-    collate = "utf8mb4_unicode_ci"
   }
   column "node_name" {
     null    = false
     type    = varchar(128)
     comment = "name of the node"
-    collate = "utf8mb4_unicode_ci"
   }
   column "node_type" {
     null    = false
     type    = varchar(128)
     comment = "the type of the node, in string"
-    collate = "utf8mb4_unicode_ci"
   }
   column "created_at" {
     null     = false
@@ -1600,31 +2248,26 @@ table "node_execution" {
     null    = true
     type    = mediumtext
     comment = "actual input of the node"
-    collate = "utf8mb4_unicode_ci"
   }
   column "output" {
     null    = true
     type    = mediumtext
     comment = "actual output of the node"
-    collate = "utf8mb4_unicode_ci"
   }
   column "raw_output" {
     null    = true
     type    = mediumtext
     comment = "the original output of the node"
-    collate = "utf8mb4_unicode_ci"
   }
   column "error_info" {
     null    = true
     type    = mediumtext
     comment = "error info"
-    collate = "utf8mb4_unicode_ci"
   }
   column "error_level" {
     null    = true
     type    = varchar(32)
     comment = "level of the error"
-    collate = "utf8mb4_unicode_ci"
   }
   column "input_tokens" {
     null     = true
@@ -1654,13 +2297,11 @@ table "node_execution" {
     null    = true
     type    = mediumtext
     comment = "the items extracted from parent composite node for this index"
-    collate = "utf8mb4_unicode_ci"
   }
   column "parent_node_id" {
     null    = true
     type    = varchar(128)
     comment = "when as inner node for loop or batch, this is the parent node_s key"
-    collate = "utf8mb4_unicode_ci"
   }
   column "sub_execute_id" {
     null     = true
@@ -1672,7 +2313,6 @@ table "node_execution" {
     null    = true
     type    = mediumtext
     comment = "extra info"
-    collate = "utf8mb4_unicode_ci"
   }
   primary_key {
     columns = [column.id]
@@ -2161,7 +2801,6 @@ table "plugin_version" {
 table "prompt_resource" {
   schema  = schema.opencoze
   comment = "prompt_resource"
-  collate = "utf8mb4_0900_ai_ci"
   column "id" {
     null           = false
     type           = bigint
@@ -2178,16 +2817,19 @@ table "prompt_resource" {
     null    = false
     type    = varchar(255)
     comment = "name"
+    collate = "utf8mb4_0900_ai_ci"
   }
   column "description" {
     null    = false
     type    = varchar(255)
     comment = "description"
+    collate = "utf8mb4_0900_ai_ci"
   }
   column "prompt_text" {
     null    = true
     type    = mediumtext
     comment = "prompt text"
+    collate = "utf8mb4_0900_ai_ci"
   }
   column "status" {
     null    = false
@@ -2481,6 +3123,12 @@ table "shortcut_command" {
     default = 0
     comment = "tool_id"
   }
+  column "source" {
+    null    = true
+    type    = tinyint
+    default = 0
+    comment = "plugin source 1 coze saas 0 default"
+  }
   primary_key {
     columns = [column.id]
   }
@@ -2607,6 +3255,17 @@ table "single_agent_draft" {
     null    = true
     type    = json
     comment = "Agent Database Base Configuration"
+  }
+  column "bot_mode" {
+    null    = false
+    type    = tinyint
+    default = 0
+    comment = "bot mode,0:single mode 2:chatflow mode"
+  }
+  column "layout_info" {
+    null    = true
+    type    = text
+    comment = "chatflow layout info"
   }
   column "shortcut_command" {
     null    = true
@@ -2768,6 +3427,17 @@ table "single_agent_version" {
     default  = 0
     unsigned = true
     comment  = "Create Time in Milliseconds"
+  }
+  column "bot_mode" {
+    null    = false
+    type    = tinyint
+    default = 0
+    comment = "bot mode,0:single mode 2:chatflow mode"
+  }
+  column "layout_info" {
+    null    = true
+    type    = text
+    comment = "chatflow layout info"
   }
   column "updated_at" {
     null     = false
@@ -3382,7 +4052,6 @@ table "user" {
 table "variable_instance" {
   schema  = schema.opencoze
   comment = "KV Memory"
-  collate = "utf8mb4_0900_ai_ci"
   column "id" {
     null     = false
     type     = bigint
@@ -3401,16 +4070,19 @@ table "variable_instance" {
     type    = varchar(128)
     default = ""
     comment = "1 for agent_id，2 for app_id"
+    collate = "utf8mb4_0900_ai_ci"
   }
   column "version" {
     null    = false
     type    = varchar(255)
     comment = "agent or project version empty represents draft status"
+    collate = "utf8mb4_0900_ai_ci"
   }
   column "keyword" {
     null    = false
     type    = varchar(255)
     comment = "Keyword to Memory"
+    collate = "utf8mb4_0900_ai_ci"
   }
   column "type" {
     null    = false
@@ -3421,11 +4093,13 @@ table "variable_instance" {
     null    = true
     type    = text
     comment = "content"
+    collate = "utf8mb4_0900_ai_ci"
   }
   column "connector_uid" {
     null    = false
     type    = varchar(255)
     comment = "connector_uid"
+    collate = "utf8mb4_0900_ai_ci"
   }
   column "connector_id" {
     null    = false
@@ -3456,7 +4130,6 @@ table "variable_instance" {
 table "variables_meta" {
   schema  = schema.opencoze
   comment = "KV Memory meta"
-  collate = "utf8mb4_0900_ai_ci"
   column "id" {
     null     = false
     type     = bigint
@@ -3481,6 +4154,7 @@ table "variables_meta" {
     type    = varchar(128)
     default = ""
     comment = "1 for agent_id，2 for app_id"
+    collate = "utf8mb4_0900_ai_ci"
   }
   column "variable_list" {
     null    = true
@@ -3505,6 +4179,7 @@ table "variables_meta" {
     null    = false
     type    = varchar(255)
     comment = "Project version, empty represents draft status"
+    collate = "utf8mb4_0900_ai_ci"
   }
   primary_key {
     columns = [column.id]
